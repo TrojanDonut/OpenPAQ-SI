@@ -56,7 +56,8 @@ An Overview for all available settings are listed in the table below.
 | CLICKHOUSE_DB_HOST       | clickhouse.server.de                       |          | Hostname for clickhouse connection without port                                                                         |
 | CLICKHOUSE_DB_PORT       | 9000                                       |          | Port for clickhouse connection                                                                                          |
 | CLICKHOUSE_DB_DATABASE   | address                                    |          | Database in which the street lists are stored                                                                           |
-| CLICKHOUSE_DB_TABLE      | lists                                      |          | Table of street list of germany to list matching                                                                        |
+| CLICKHOUSE_DB_TABLE      | lists                                      |          | Table of street list data used by the active matcher                                                                    |
+| CLICKHOUSE_COUNTRY       | de                                         |          | Which country-specific matcher to load (`de` default, set to `si` for the Slovenian schema)                             |
 | USE_TLS                  | false                                      |    x     | Enables TLS encryption to use HTTPS instead of HTTP                                                                     |  
 | TLS_KEY_FILE_PATH        | /cert/key.pem                              |          | Path to the secret key file                                                                                             |
 | TLS_CERT_FILE_PATH       | /cert/cert.pem                             |          | Path to the certificate file                                                                                            |
@@ -117,6 +118,7 @@ After setting up the database, Clickhouse must be enabled in OpenPAQ by setting 
 - CLICKHOUSE_DB_PASSWORD=<clickhouse user password\>
 - CLICKHOUSE_DB_DATABASE=<clickhouse database name\>
 - CLICKHOUSE_DB_TABLE=<clickhouse table name\>
+- CLICKHOUSE_COUNTRY=<de or si (default de)>
 
 ## Configure SSL/TLS
 
@@ -306,5 +308,4 @@ docker run \
 -p 8001:8001 \
 ghcr.io/deniceg/openpaq:latest
 ```
-
 

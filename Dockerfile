@@ -15,6 +15,7 @@ FROM scratch
 WORKDIR /data
 COPY --from=builder /data/bin/cva /data
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+# Copy openAPI docs to the path expected by the application (./docs/docs/openAPI)
 COPY --from=builder /data/docs/openAPI /data/docs/docs/openAPI
 ENV TZ="Europe/Berlin"
 CMD [ "/data/cva" ]

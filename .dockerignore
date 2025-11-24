@@ -1,0 +1,12 @@
+.git
+.gitignore
+.dockerignore
+# Exclude most of docs/ but keep openAPI for the application
+docs/**
+!docs/openAPI/**
+*.md
+.env
+.env.example
+docker-compose.yml
+clickhouse_data/
+

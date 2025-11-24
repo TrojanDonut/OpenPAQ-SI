@@ -22,6 +22,7 @@ type ServiceConfig struct {
 	CacheUrl          string
 	UseCaching        bool
 	ClickhouseEnabled bool
+	ClickhouseCountry string
 }
 
 type Service struct {
@@ -38,9 +39,22 @@ func NewService(config *ServiceConfig, matcherConfig algorithms.MatchSeverityCon
 	var d *listmatcher.ListMatcher
 	if config.ClickhouseEnabled {
 		d = listmatcher.NewMatcher(matcherConfig)
+		registerCountry := config.ClickhouseCountry
+		if registerCountry == "" {
+			registerCountry = "de"
+		}
 
-		if err := d.Register("de", config.DIYDatabaseConfig, matcherConfig); err != nil {
-			panic("unable to register DE country checker")
+		switch registerCountry {
+		case "si":
+			if err := d.Register("si", config.DIYDatabaseConfig, matcherConfig); err != nil {
+				panic("unable to register SI country checker")
+			}
+		case "de":
+			fallthrough
+		default:
+			if err := d.Register("de", config.DIYDatabaseConfig, matcherConfig); err != nil {
+				panic("unable to register DE country checker")
+			}
 		}
 	}
 

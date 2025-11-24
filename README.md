@@ -19,3 +19,79 @@ OpenPAQ offers the following capabilities in address validation, measured with a
 
 
 Please have a look at the [documentation](https://openpaq.de) for a detailed description of the program.
+
+## Docker Compose Setup
+
+This project includes a `docker-compose.yml` file that sets up both the OpenPAQ server and ClickHouse database for Slovenian address validation.
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- Slovenian address data to import into ClickHouse
+
+### Quick Start
+
+1. **Start the services:**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Verify ClickHouse is running:**
+   ```bash
+   docker-compose ps
+   ```
+
+3. **Import your Slovenian address data:**
+   The table `slovenian_addresses` will be automatically created. You need to import your data using ClickHouse client:
+   ```bash
+   docker-compose exec clickhouse clickhouse-client
+   ```
+   Then use `INSERT` statements or import from a file.
+
+### Configuration
+
+The docker-compose setup uses the following default ClickHouse configuration:
+- **Host:** `clickhouse` (internal Docker network)
+- **Port:** `9000` (native protocol)
+- **Database:** `default`
+- **Table:** `slovenian_addresses`
+- **User:** `default`
+- **Password:** `default`
+
+You can override these settings by modifying the environment variables in `docker-compose.yml` or by creating a `.env` file.
+
+### Environment Variables
+
+Key environment variables for OpenPAQ (set in docker-compose.yml):
+- `CLICKHOUSE_ENABLED=true` - Enables ClickHouse integration
+- `CLICKHOUSE_DB_HOST=clickhouse` - ClickHouse hostname
+- `CLICKHOUSE_DB_PORT=9000` - ClickHouse native port
+- `CLICKHOUSE_DB_DATABASE=default` - Database name
+- `CLICKHOUSE_DB_TABLE=slovenian_addresses` - Table name
+- `CLICKHOUSE_COUNTRY=de` - Country-specific matcher to load (`de` default, set to `si` to enable the Slovenian schema)
+- `NOMINATIM_ADDRESS=https://nominatim.openstreetmap.org/search` - Default Nominatim endpoint
+- `WEBSERVER_LISTEN_ADDRESS` - Server listen address (default: `0.0.0.0:8080`)
+
+### Data Persistence
+
+ClickHouse data is persisted in a Docker volume named `clickhouse_data`. To remove all data:
+```bash
+docker-compose down -v
+```
+
+### Troubleshooting
+
+- **Check ClickHouse logs:**
+  ```bash
+  docker-compose logs clickhouse
+  ```
+
+- **Check OpenPAQ logs:**
+  ```bash
+  docker-compose logs openpaq
+  ```
+
+- **Verify table creation:**
+  ```bash
+  docker-compose exec clickhouse clickhouse-client --query "SHOW TABLES"
+  ```

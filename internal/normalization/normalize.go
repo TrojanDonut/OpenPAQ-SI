@@ -75,6 +75,11 @@ func NewNormalizer(fallback string) *Normalizer {
 		panic(err)
 	}
 
+	siNormalizer, err := NewSI()
+	if err != nil {
+		panic(err)
+	}
+
 	n.register(genericNormalizer)
 	n.register(deNormalizer)
 	n.register(dkNormalizer)
@@ -87,6 +92,7 @@ func NewNormalizer(fallback string) *Normalizer {
 	n.register(itNormalizer)
 	n.register(frNormalizer)
 	n.register(chNormalizer)
+	n.register(siNormalizer)
 
 	for i := range n.availableCountries {
 		if fallback == n.availableCountries[i].GetCountryCode() {

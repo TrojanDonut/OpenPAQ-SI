@@ -47,6 +47,13 @@ func lookupEnv(s string) string {
 	}
 }
 
+func lookupEnvOrDefault(s string, defaultValue string) string {
+	if e, ok := os.LookupEnv(s); ok && e != "" {
+		return e
+	}
+	return defaultValue
+}
+
 func main() {
 
 	clickhouseEnabledString := lookupEnv("CLICKHOUSE_ENABLED")
@@ -56,7 +63,9 @@ func main() {
 	}
 
 	var databaseConfig diytypes.DatabaseConfig
+	clickhouseCountry := "de"
 	if clickhouseEnabled == true {
+		clickhouseCountry = strings.ToLower(lookupEnvOrDefault("CLICKHOUSE_COUNTRY", "de"))
 		databaseConfig = diytypes.DatabaseConfig{
 			DbUserName:     lookupEnv("CLICKHOUSE_DB_USERNAME"),
 			DbUserPassword: lookupEnv("CLICKHOUSE_DB_PASSWORD"),
@@ -122,6 +131,7 @@ func main() {
 		UseCaching:        enableCache,
 		CacheUrl:          cacheUrl,
 		ClickhouseEnabled: clickhouseEnabled,
+		ClickhouseCountry: clickhouseCountry,
 	}, matchSeverityConfig, nominatimConfig)
 
 	log.Error(service.Start())

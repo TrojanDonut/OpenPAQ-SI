@@ -1,0 +1,31 @@
+## Build artifacts
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+
+## Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+## Python cache
+__pycache__/
+*.pyc
+
+## Editor/IDE files
+.idea/
+.vscode/
+
+## Local environment
+.env
+
+## Scripts folder (contains local data + helper utilities)
+scripts/
+

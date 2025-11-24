@@ -47,6 +47,11 @@ type nominatimRequestParameter struct {
 }
 
 func (nom *Nominatim) request(ctx context.Context, reqParams nominatimRequestParameter) ([]ParsedResult, error) {
+	// Skip Nominatim API calls if URL is "none" or empty (ClickHouse-only mode)
+	if nom.url == "" || nom.url == "none" {
+		return []ParsedResult{}, nil
+	}
+
 	languages := getInputLanguages(nom.languages, reqParams.countryCode)
 
 	writeProtection := sync.Mutex{}

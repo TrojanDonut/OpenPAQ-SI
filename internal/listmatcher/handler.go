@@ -3,12 +3,14 @@ package listmatcher
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"openPAQ/internal/algorithms"
 	"openPAQ/internal/listmatcher/de"
+	"openPAQ/internal/listmatcher/si"
 	types2 "openPAQ/internal/listmatcher/types"
 	"openPAQ/internal/normalization"
 	"openPAQ/internal/types"
+
+	"github.com/sirupsen/logrus"
 )
 
 type CountryMatcher interface {
@@ -40,6 +42,15 @@ func (lm *ListMatcher) Register(cc string, dbConfig types2.DatabaseConfig, match
 		}
 
 		lm.checker = append(lm.checker, de.NewDE(de.NewDatabase(dbConfig), deNormalizer, matcherConfig))
+	}
+
+	if cc == "si" {
+		siNormalizer, err := normalization.NewSI()
+		if err != nil {
+			panic(err)
+		}
+
+		lm.checker = append(lm.checker, si.NewSI(si.NewDatabase(dbConfig), siNormalizer, matcherConfig))
 	}
 
 	return nil
