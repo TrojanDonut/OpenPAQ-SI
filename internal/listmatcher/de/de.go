@@ -1,11 +1,13 @@
 package de
 
 import (
-	"github.com/sirupsen/logrus"
 	"openPAQ/internal/algorithms"
 	"openPAQ/internal/normalization"
 	"openPAQ/internal/types"
 	"slices"
+	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 type NormalizeEnclosure struct {
@@ -196,7 +198,7 @@ func (de *DE) PostalCodeStreetCheck(input types.NormalizeInput) chan types.PairM
 		var normalizedStreets []string
 
 		for _, streetFromList := range postalCodeItem.Streets {
-			normalizedStreets = append(normalizedStreets, streetFromList.Normalized)
+			normalizedStreets = append(normalizedStreets, strings.ReplaceAll(streetFromList.Normalized, "straße", ""))
 		}
 
 		var matches []types.PostalCodeStreet
@@ -207,7 +209,12 @@ func (de *DE) PostalCodeStreetCheck(input types.NormalizeInput) chan types.PairM
 				streetConfig := de.matcherConfig
 				streetConfig.AllowPartialMatch = true
 				streetConfig.AllowCombineAllForwardCombinations = true
-				streetConfig.PartialExcludeWords = []string{"straße"}
+				streetConfig.AlgorithmThreshold = streetConfig.DeListMatchAlgorithmThreshold
+				if streetConfig.DeListMatchAlgorithmThreshold > streetConfig.PartialAlgorithmThreshold {
+					streetConfig.PartialAlgorithmThreshold = streetConfig.DeListMatchAlgorithmThreshold
+				}
+
+				inputStreetItem = strings.ReplaceAll(inputStreetItem, "straße", "")
 
 				streetCandidates, err := algorithms.GetMatches(inputStreetItem, normalizedStreets, streetConfig)
 
@@ -217,7 +224,7 @@ func (de *DE) PostalCodeStreetCheck(input types.NormalizeInput) chan types.PairM
 
 				for _, streetCandidate := range streetCandidates {
 					for _, street := range postalCodeItem.Streets {
-						if street.Normalized == streetCandidate.Value {
+						if strings.ReplaceAll(street.Normalized, "straße", "") == streetCandidate.Value {
 
 							matches = append(matches, types.PostalCodeStreet{
 								PostalCode:            postalCodeItem.PostalCode,
