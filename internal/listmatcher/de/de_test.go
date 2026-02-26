@@ -1,12 +1,13 @@
 package de
 
 import (
-	"github.com/hbollon/go-edlib"
 	"openPAQ/internal/algorithms"
 	"openPAQ/internal/normalization"
 	"openPAQ/internal/types"
 	"reflect"
 	"testing"
+
+	"github.com/hbollon/go-edlib"
 )
 
 type mockDB struct {
@@ -259,7 +260,7 @@ func TestCityStreetCheck(t *testing.T) {
 						Street:                "Eins-Straße",
 						PostalCode:            "67433",
 						CountryCode:           "de",
-						StreetSimilarity:      0.6875,
+						StreetSimilarity:      0.5,
 						CitySimilarity:        0.32,
 						WasPartialCityMatch:   true,
 						WasPartialStreetMatch: true,
@@ -300,10 +301,11 @@ func TestCityStreetCheck(t *testing.T) {
 
 	// same config as used in implementation
 	matcherConfig := algorithms.MatchSeverityConfig{
-		Algorithm:                 edlib.Lcs,
-		AlgorithmThreshold:        0.9,
-		PartialAlgorithm:          edlib.Lcs,
-		PartialAlgorithmThreshold: 1,
+		Algorithm:                     edlib.Lcs,
+		AlgorithmThreshold:            0.9,
+		DeListMatchAlgorithmThreshold: 0.9,
+		PartialAlgorithm:              edlib.Lcs,
+		PartialAlgorithmThreshold:     1,
 	}
 
 	deListMatcher := NewDE(getDbMock(), deNormalizer, matcherConfig)
@@ -367,7 +369,7 @@ func TestPostalCodeStreetCheck(t *testing.T) {
 						PostalCode:            "12345",
 						Street:                "EinsA-Gleich-Straße",
 						CountryCode:           "de",
-						StreetSimilarity:      0.94736844,
+						StreetSimilarity:      0.9230769,
 						WasPartialStreetMatch: false,
 						WasListMatch:          true,
 					},
@@ -388,7 +390,7 @@ func TestPostalCodeStreetCheck(t *testing.T) {
 						PostalCode:            "12345",
 						Street:                "Eins-Gleich-Straße",
 						CountryCode:           "de",
-						StreetSimilarity:      0.9,
+						StreetSimilarity:      0.85714287,
 						WasPartialStreetMatch: false,
 						WasListMatch:          true,
 					},
@@ -409,7 +411,7 @@ func TestPostalCodeStreetCheck(t *testing.T) {
 						PostalCode:            "12345",
 						Street:                "Eins-Gleich-Straße",
 						CountryCode:           "de",
-						StreetSimilarity:      0.4090909,
+						StreetSimilarity:      0.31578946,
 						WasPartialStreetMatch: true,
 						WasListMatch:          true,
 					},
@@ -434,10 +436,11 @@ func TestPostalCodeStreetCheck(t *testing.T) {
 
 	// same config as used in implementation
 	matcherConfig := algorithms.MatchSeverityConfig{
-		Algorithm:                 edlib.Lcs,
-		AlgorithmThreshold:        0.9,
-		PartialAlgorithm:          edlib.Lcs,
-		PartialAlgorithmThreshold: 1,
+		Algorithm:                     edlib.Lcs,
+		AlgorithmThreshold:            0.8,
+		DeListMatchAlgorithmThreshold: 0.8,
+		PartialAlgorithm:              edlib.Lcs,
+		PartialAlgorithmThreshold:     1,
 	}
 
 	deListMatcher := NewDE(getDbMock(), deNormalizer, matcherConfig)

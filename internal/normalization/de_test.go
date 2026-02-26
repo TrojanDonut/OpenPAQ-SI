@@ -2,6 +2,7 @@ package normalization
 
 import (
 	"reflect"
+	"regexp"
 	"testing"
 )
 
@@ -144,6 +145,67 @@ func TestNormalizeAddressNewlineSplitter(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("normalizeAddressNewlineSplitter() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDE_Street(t *testing.T) {
+	type fields struct {
+		reCity        *regexp.Regexp
+		rePostalCode  *regexp.Regexp
+		reStreet      *regexp.Regexp
+		reFoundStreet *regexp.Regexp
+	}
+
+	tests := []struct {
+		name    string
+		fields  fields
+		address string
+		want    []string
+		wantErr bool
+	}{
+		{
+			name:    "str. replacement",
+			address: "Mühlstr. 34",
+			want:    []string{"muehlstraße"},
+			wantErr: false,
+		},
+		{
+			name:    "strasse replacement",
+			address: "Mühlstrasse 34",
+			want:    []string{"muehlstraße"},
+			wantErr: false,
+		},
+		{
+			name:    "str replacement",
+			address: "Mühlstr 34",
+			want:    []string{"muehlstraße"},
+			wantErr: false,
+		},
+		{
+			name:    "str in the middle",
+			address: "Industriestr 34",
+			want:    []string{"industriestraße"},
+			wantErr: false,
+		},
+		{
+			name:    "str in the middle 2",
+			address: "Zum Fingstried 34",
+			want:    []string{"zum fingstried"},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			de, _ := NewDE()
+			got, err := de.Street(tt.address)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Street() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Street() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
