@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"openPAQ/internal/algorithms"
+	"openPAQ/internal/nominatim"
 	"openPAQ/internal/types"
 	"strings"
 	"time"
@@ -57,7 +58,13 @@ func (s *Service) setupWebserver() {
 		s.engine.GET("/api/v1/check", s.checkHandler)
 	}
 
-	prometheus.MustRegister(types.InputNormalizerErrorCounter, activeRequest, allRequests)
+	collectors := []prometheus.Collector{
+		types.InputNormalizerErrorCounter,
+		activeRequest,
+		allRequests,
+	}
+	collectors = append(collectors, nominatim.MetricsCollectors()...)
+	prometheus.MustRegister(collectors...)
 
 	s.engine.GET("/metrics", func(ctx *gin.Context) {
 		h := promhttp.Handler()
@@ -190,7 +197,7 @@ func (s *Service) checkHandler(ctx *gin.Context) {
 	var debugDude types.PairMatching
 	var NominatimError error
 
-	ctx2, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+	ctx2, cancel := context.WithTimeout(ctx.Request.Context(), 3*time.Minute)
 	defer cancel()
 
 	if s.config.ClickhouseEnabled && s.listMatcher.Possible(input.CountryCode) {

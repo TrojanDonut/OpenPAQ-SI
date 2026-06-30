@@ -16,21 +16,31 @@ type api interface {
 type apiNominatim struct {
 	client    http.Client
 	userAgent string
+	limiter   requestLimiter
 }
 
 func (napi apiNominatim) ExecuteNominatimRequest(r *http.Request) ([]NominatimCoreResult, error) {
+	if napi.limiter != nil {
+		// Rate-limit real outbound HTTP attempts so all concurrent callers share the same budget.
+		if err := napi.limiter.Wait(r.Context()); err != nil {
+			return nil, err
+		}
+	}
+
 	r.Header.Add("User-Agent", napi.userAgent)
 	res, err := napi.client.Do(r)
 	if err != nil {
 		return nil, err
 	}
+	if res.Body == nil {
+		return nil, fmt.Errorf("response body is nil")
+	}
+	defer res.Body.Close()
+
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("http status code not 200, instead: %d", res.StatusCode)
 	}
 
-	if res.Body == nil {
-		return nil, fmt.Errorf("response body is nil")
-	}
 	var result []NominatimResult
 	err = json.NewDecoder(res.Body).Decode(&result)
 	if err != nil {
