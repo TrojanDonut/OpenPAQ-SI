@@ -26,6 +26,4 @@ __pycache__/
 ## Local environment
 .env
 
-## Scripts folder (contains local data + helper utilities)
-scripts/
 
