@@ -1,0 +1,63 @@
+default:
+  image: docker:28.4.0
+  services:
+    - name: docker:28.4.0-dind
+
+before_script:
+  - docker info
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_DRIVER: overlay2
+
+stages:
+  - setup
+  - test
+  - build
+  - deploy
+
+cache:
+  key: go-mod
+  paths:
+    - /go/pkg/mod/
+
+setup:
+  stage: setup
+  image: golang:1.26.0-alpine
+  services: []
+  script:
+    - go mod download
+  cache:
+    policy: pull-push
+
+test:
+  stage: test
+  image: golang:1.26.0-alpine
+  services: []
+  script:
+    - go test ./... -v -count=1
+  cache:
+    policy: pull
+
+build:
+  stage: build
+  before_script:
+    - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+
+deploy:
+  stage: deploy
+  before_script:
+    - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+  environment:
+    name: production
+  only:
+    - main
