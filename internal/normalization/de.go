@@ -9,10 +9,11 @@ import (
 )
 
 type DE struct {
-	reCity        *regexp.Regexp
-	rePostalCode  *regexp.Regexp
-	reStreet      *regexp.Regexp
-	reFoundStreet *regexp.Regexp
+	reCity           *regexp.Regexp
+	rePostalCode     *regexp.Regexp
+	reStreet         *regexp.Regexp
+	reFoundStreet    *regexp.Regexp
+	reStrAtEndOfWord *regexp.Regexp
 }
 
 func NewDE() (*DE, error) {
@@ -36,11 +37,17 @@ func NewDE() (*DE, error) {
 		return nil, err
 	}
 
+	reStrAtEndOfWord, err := regexp.Compile("str\\b")
+	if err != nil {
+		return nil, err
+	}
+
 	return &DE{
-		reCity:        reCity,
-		rePostalCode:  rePostalCode,
-		reStreet:      reStreet,
-		reFoundStreet: reFoundStreet,
+		reCity:           reCity,
+		rePostalCode:     rePostalCode,
+		reStreet:         reStreet,
+		reFoundStreet:    reFoundStreet,
+		reStrAtEndOfWord: reStrAtEndOfWord,
 	}, nil
 }
 
@@ -102,6 +109,8 @@ func (g *DE) Street(address string) ([]string, error) {
 	address = strings.ReplaceAll(address, "ä", "ae")
 	address = strings.ReplaceAll(address, "ö", "oe")
 	address = strings.ReplaceAll(address, "st.", "sankt")
+
+	address = g.reStrAtEndOfWord.ReplaceAllString(address, "straße")
 
 	foundStreets := g.reFoundStreet.Find([]byte(address))
 	if len(foundStreets) != 0 {

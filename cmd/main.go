@@ -58,7 +58,7 @@ func main() {
 
 	clickhouseEnabledString := lookupEnv("CLICKHOUSE_ENABLED")
 	clickhouseEnabled := false
-	if clickhouseEnabledString == "true" || clickhouseEnabledString == "1" {
+	if strings.ToLower(clickhouseEnabledString) == "true" || clickhouseEnabledString == "1" {
 		clickhouseEnabled = true
 	}
 
@@ -76,10 +76,11 @@ func main() {
 		}
 	}
 	matchSeverityConfig := algorithms.MatchSeverityConfig{
-		Algorithm:                 edlib.DamerauLevenshtein,
-		AlgorithmThreshold:        0.8,
-		PartialAlgorithm:          edlib.DamerauLevenshtein,
-		PartialAlgorithmThreshold: 0.8,
+		Algorithm:                     edlib.DamerauLevenshtein,
+		AlgorithmThreshold:            0.8,
+		DeListMatchAlgorithmThreshold: 0.74,
+		PartialAlgorithm:              edlib.DamerauLevenshtein,
+		PartialAlgorithmThreshold:     0.8,
 	}
 
 	useTlsEnv := lookupEnv("USE_TLS")

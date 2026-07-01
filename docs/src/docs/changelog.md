@@ -16,6 +16,14 @@ With any major version update, breaking changes may occur that can affect the be
 
 ---
 
+## [5.1.0] - 2026-02-25
+### Added
+- Improved German address normalization. Detection of street abbreviation variations (straße, str., str)
+- List matching similarity calculation does not consider the substring "straße" in order to avoid false positives.
+- To give more flexibility in the new German list matching algorithm, a separate threshold has been added.   
+
+---
+
 ## [5.0.15] - 2025-10-21
 ### Fixed
 - Metrics have been published with wrong label
