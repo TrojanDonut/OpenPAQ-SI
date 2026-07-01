@@ -3,9 +3,10 @@ package de
 import (
 	"context"
 	"fmt"
-	"github.com/ClickHouse/clickhouse-go/v2"
 	"openPAQ/internal/listmatcher/types"
 	"openPAQ/internal/normalization"
+
+	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
 type Database interface {

@@ -3,10 +3,11 @@ package algorithms
 import (
 	"errors"
 	"fmt"
-	"github.com/hbollon/go-edlib"
 	"slices"
 	"sort"
 	"strings"
+
+	"github.com/hbollon/go-edlib"
 )
 
 type MatchResult struct {
@@ -234,6 +235,7 @@ type MatchSeverityConfig struct {
 	AllowPartialCompareListMatch       bool
 	PartialAlgorithm                   edlib.Algorithm `json:"partial_matching_algorithm"`
 	PartialAlgorithmThreshold          float32         `json:"partial_matching_threshold"`
+	DeListMatchAlgorithmThreshold      float32         `json:"de_list_matching_algorithm_threshold"`
 	PartialInputSeparators             []string
 	PartialExcludeWords                []string
 	PartialCompareListSeparators       []string
