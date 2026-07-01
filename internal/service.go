@@ -70,7 +70,7 @@ func NewService(config *ServiceConfig, matcherConfig algorithms.MatchSeverityCon
 		webserver:   nil,
 		config:      config,
 		listMatcher: d,
-		nominatim:   nominatim.NewNominatim(nominatimConfig.Url, nominatimConfig.Languages, matcherConfig, norma, nil, fmt.Sprint("openPAQ", "-", config.Version)),
+		nominatim:   nominatim.NewNominatim(nominatimConfig, matcherConfig, norma, nil, fmt.Sprint("openPAQ", "-", config.Version)),
 		normalizer:  norma,
 		mc:          mc,
 	}

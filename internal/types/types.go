@@ -4,6 +4,7 @@ import (
 	"openPAQ/internal/algorithms"
 	"openPAQ/internal/normalization"
 	"strings"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -134,8 +135,10 @@ type PostalCodeStreet struct {
 }
 
 type NominatimConfig struct {
-	Url       string
-	Languages []string
+	Url               string
+	Languages         []string
+	RateLimitRequests int
+	RateLimitWindow   time.Duration
 }
 
 func RemoveDuplicate[T comparable](sliceList []T) []T {

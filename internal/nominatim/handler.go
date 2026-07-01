@@ -17,19 +17,21 @@ type Nominatim struct {
 	normalizer *normalization.Normalizer
 }
 
-func NewNominatim(url string, languages []string, config algorithms.MatchSeverityConfig, normalizer *normalization.Normalizer, nominatimApi api, userAgent string) *Nominatim {
+func NewNominatim(nominatimConfig types.NominatimConfig, config algorithms.MatchSeverityConfig, normalizer *normalization.Normalizer, nominatimApi api, userAgent string) *Nominatim {
+	limiter := newOutboundRateLimiter(nominatimConfig.RateLimitRequests, nominatimConfig.RateLimitWindow)
 
 	nominatim := Nominatim{
-		url,
-		languages,
-		config,
-		apiNominatim{
+		url:       nominatimConfig.Url,
+		languages: nominatimConfig.Languages,
+		config:    config,
+		api: apiNominatim{
 			client: http.Client{
 				Timeout: 180 * time.Second,
 			},
 			userAgent: userAgent,
+			limiter:   limiter,
 		},
-		normalizer,
+		normalizer: normalizer,
 	}
 
 	if nominatimApi != nil {

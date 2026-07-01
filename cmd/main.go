@@ -7,7 +7,9 @@ import (
 	diytypes "openPAQ/internal/listmatcher/types"
 	"openPAQ/internal/types"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hbollon/go-edlib"
 	log "github.com/sirupsen/logrus"
@@ -52,6 +54,24 @@ func lookupEnvOrDefault(s string, defaultValue string) string {
 		return e
 	}
 	return defaultValue
+}
+
+func lookupEnvIntOrDefault(s string, defaultValue int) int {
+	value := lookupEnvOrDefault(s, strconv.Itoa(defaultValue))
+	parsed, err := strconv.Atoi(value)
+	if err != nil {
+		panic(fmt.Errorf("ENVVAR: %s has invalid integer value %q", s, value))
+	}
+	return parsed
+}
+
+func lookupEnvDurationOrDefault(s string, defaultValue time.Duration) time.Duration {
+	value := lookupEnvOrDefault(s, defaultValue.String())
+	parsed, err := time.ParseDuration(value)
+	if err != nil {
+		panic(fmt.Errorf("ENVVAR: %s has invalid duration value %q", s, value))
+	}
+	return parsed
 }
 
 func main() {
@@ -112,9 +132,25 @@ func main() {
 		TLSCertFilePath: tlsCertFilePath,
 	}
 
+	nominatimRateLimitRequests := lookupEnvIntOrDefault("NOMINATIM_RATE_LIMIT_REQUESTS", 1)
+	nominatimRateLimitWindow := time.Duration(0)
+	if nominatimRateLimitRequests > 0 {
+		nominatimRateLimitWindow = lookupEnvDurationOrDefault("NOMINATIM_RATE_LIMIT_WINDOW", time.Second)
+	}
+
 	nominatimConfig := types.NominatimConfig{
-		Url:       lookupEnv("NOMINATIM_ADDRESS"),
-		Languages: []string{"de", "en"},
+		Url:               lookupEnv("NOMINATIM_ADDRESS"),
+		Languages:         []string{"de", "en"},
+		RateLimitRequests: nominatimRateLimitRequests,
+		RateLimitWindow:   nominatimRateLimitWindow,
+	}
+
+	if nominatimConfig.RateLimitRequests < 0 {
+		panic("ENVVAR: NOMINATIM_RATE_LIMIT_REQUESTS must be greater than or equal to 0")
+	}
+
+	if nominatimConfig.RateLimitRequests > 0 && nominatimConfig.RateLimitWindow <= 0 {
+		panic("ENVVAR: NOMINATIM_RATE_LIMIT_WINDOW must be greater than 0 when rate limiting is enabled")
 	}
 
 	ce := lookupEnv("CACHE_ENABLED")

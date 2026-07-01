@@ -75,7 +75,9 @@ func (nom *Nominatim) request(ctx context.Context, reqParams nominatimRequestPar
 			}, "", l)
 
 			if errSearchString != nil && errParameter != nil {
+				writeProtection.Lock()
 				nominatimError = errors.Join(errSearchString, errParameter)
+				writeProtection.Unlock()
 				return
 			}
 
@@ -236,6 +238,7 @@ func (nom *Nominatim) PostalCodeStreetCheck(ctx context.Context, input types.Nor
 				c <- types.PairMatching{
 					NominatimErrors: err,
 				}
+				return
 			}
 
 			nominatimResults = removeDuplicatesParsedResult(nominatimResults)
@@ -324,6 +327,7 @@ func (nom *Nominatim) PostalCodeCityCheck(ctx context.Context, input types.Norma
 			c <- types.PairMatching{
 				NominatimErrors: err,
 			}
+			return
 		}
 
 		moreNominatimResults, err := nom.request(ctx, nominatimRequestParameter{
@@ -336,6 +340,7 @@ func (nom *Nominatim) PostalCodeCityCheck(ctx context.Context, input types.Norma
 			c <- types.PairMatching{
 				NominatimErrors: err,
 			}
+			return
 		}
 
 		nominatimResults = append(nominatimResults, moreNominatimResults...)

@@ -107,7 +107,8 @@ services:
       # When using --profile nominatim-proxy, override with: NOMINATIM_ADDRESS=http://haproxy:8081/search
       #NOMINATIM_ADDRESS: http://haproxy:8081/search
       NOMINATIM_ADDRESS: ${NOMINATIM_ADDRESS:-none}
-      
+      NOMINATIM_RATE_LIMIT_REQUESTS: ${NOMINATIM_RATE_LIMIT_REQUESTS:-1}
+      NOMINATIM_RATE_LIMIT_WINDOW: ${NOMINATIM_RATE_LIMIT_WINDOW:-1s}
       # TLS Configuration (optional)
       USE_TLS: ${USE_TLS:-false}
       TLS_KEY_FILE_PATH: ${TLS_KEY_FILE_PATH:-}
