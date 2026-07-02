@@ -22,7 +22,7 @@ Please have a look at the [documentation](https://openpaq.de) for a detailed des
 
 ## Docker Compose Setup
 
-This project includes a `docker-compose.yml` file that sets up both the OpenPAQ server and ClickHouse database for Slovenian address validation.
+This project includes a `docker-compose.yml` file that sets up the OpenPAQ server and ClickHouse database for Slovenian address validation. It also uses GitLab CI/CD to build and deploy, synced automatically from GitHub.
 
 ### Prerequisites
 
