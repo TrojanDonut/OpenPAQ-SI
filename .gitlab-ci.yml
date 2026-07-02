@@ -9,8 +9,17 @@ before_script:
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
   DOCKER_DRIVER: overlay2
+  GITHUB_REPO_URL: "https://oauth2:${GITHUB_ACCESS_TOKEN}@github.com/TrojanDonut/OpenPAQ-SI.git"
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 stages:
+  - sync
   - setup
   - test
   - build
@@ -21,10 +30,30 @@ cache:
   paths:
     - /go/pkg/mod/
 
+sync-from-github:
+  stage: sync
+  image: alpine/git:latest
+  services: []
+  before_script: []
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+  script:
+    - git clone --mirror "${GITHUB_REPO_URL}" repo
+    - cd repo
+    - git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git push --mirror origin
+
 setup:
   stage: setup
   image: golang:1.26.0-alpine
   services: []
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - go mod download
   cache:
@@ -34,6 +63,8 @@ test:
   stage: test
   image: golang:1.26.0-alpine
   services: []
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - go test ./... -v -count=1
   cache:
@@ -41,9 +72,10 @@ test:
 
 build:
   stage: build
-  before_script:
-    - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
+    - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
     - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
@@ -51,13 +83,12 @@ build:
 
 deploy:
   stage: deploy
-  before_script:
-    - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
+    - echo "$CI_DEPLOY_PASSWORD" | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:latest"
     - docker push "$CI_REGISTRY_IMAGE:latest"
   environment:
     name: production
-  only:
-    - main
