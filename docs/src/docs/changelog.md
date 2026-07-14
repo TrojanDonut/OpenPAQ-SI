@@ -16,6 +16,14 @@ With any major version update, breaking changes may occur that can affect the be
 
 ---
 
+## [5.2.0] - 2026-07-07
+### Added
+- Improved Austrian (AT) address matching: `IsolatedDwelling` is now also used as a street designation in addition to city.
+- Improved Austrian (AT) address normalization: added expansion of abbreviation "wr." to "wiener".
+- Redoc: updated script source url
+
+---
+
 ## [5.1.0] - 2026-02-25
 ### Added
 - Improved German address normalization. Detection of street abbreviation variations (straße, str., str)
