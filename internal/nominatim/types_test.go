@@ -66,7 +66,7 @@ func TestNominatimCoreResult_parse(t *testing.T) {
 		CountryCode:      "DE",
 	}
 	expectedResult := ParsedResult{
-		Street:      []string{"hamlet", "road", "cb"},
+		Street:      []string{"hamlet", "isolated", "road", "cb"},
 		PostalCode:  "de-12345",
 		City:        []string{"germany", "nrw", "dortmund", "dortmund", "dortmund nord", "dortmund nordkaff", "dortmund n1", "n1", "dborough", "suburb", "subdivision", "hamlet", "croft", "isolated", "neighbourhood", "allot", "quarter", "resident", "farm 1", "yard", "industrial area", "commerc", "retail"},
 		CountryCode: "de",
