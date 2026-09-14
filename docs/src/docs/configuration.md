@@ -277,15 +277,15 @@ OpenPAQ is battle test with the docker container [mediagis/nominatim](https://gi
 ### Example configuration
 
 In this example a small area of Germany is used. Be aware that the import of the whole world takes a lot of time and require
-a big amount of resources. See [Nominatim docs](https://nominatim.org/release-docs/5.1/admin/Installation/#hardware) for further information.
+a big amount of resources. See [Nominatim docs](https://nominatim.org/release-docs/5.3/admin/Installation/#hardware) for further information.
 
 ```shell
 docker run -it \
   -e PBF_URL=https://download.geofabrik.de/europe/germany/hessen-latest.osm.pbf \
-  -e REPLICATION_URL=https://https://download.geofabrik.de/europe/germany/hessen-updates/ \
+  -e REPLICATION_URL=https://download.geofabrik.de/europe/germany/hessen-updates/ \
   -p 8080:8080 \
   --name nominatim \
-  mediagis/nominatim:5.1
+  mediagis/nominatim:5.3
 ```
 
 !!! info

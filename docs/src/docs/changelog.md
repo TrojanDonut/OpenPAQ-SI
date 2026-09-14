@@ -16,6 +16,12 @@ With any major version update, breaking changes may occur that can affect the be
 
 ---
 
+## [5.2.3] - 2026-07-07
+### Fixed
+- Fixed Typo in Nominatim Part of documentation
+
+--- 
+
 ## [5.2.0] - 2026-07-07
 ### Added
 - Improved Austrian (AT) address matching: `IsolatedDwelling` is now also used as a street designation in addition to city.
