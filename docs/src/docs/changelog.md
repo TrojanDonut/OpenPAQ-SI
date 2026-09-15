@@ -16,11 +16,25 @@ With any major version update, breaking changes may occur that can affect the be
 
 ---
 
-## [5.2.3] - 2026-07-07
+## [5.2.3] - 2026-09-14
 ### Fixed
 - Fixed Typo in Nominatim Part of documentation
+### Changed
+- Dependencies update
 
---- 
+---
+
+## [5.2.2] - 2026-07-14
+### Changed
+- Dependencies update
+
+---
+
+## [5.2.1] - 2026-07-14
+### Changed
+- Dependencies update
+
+---
 
 ## [5.2.0] - 2026-07-07
 ### Added
